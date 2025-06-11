@@ -33,7 +33,6 @@ app.add_middleware(
 # Request models
 class ChatRequest(BaseModel):
     messages: List[ClientMessage]
-    project_id: UUID
 
 class HealthResponse(BaseModel):
     status: str
@@ -53,13 +52,12 @@ async def chat_endpoint(request: ChatRequest) -> StreamingResponse:
     Chat endpoint that handles conversations with the ZLV AI Assistant
     
     Args:
-        request: ChatRequest containing messages and project_id
+        request: ChatRequest containing messages
         
     Returns:
         StreamingResponse with chat data
     """
     try:
-        logger.info(f"Processing chat request for project: {request.project_id}")
         logger.debug(f"Messages count: {len(request.messages)}")
         
         # Validate that we have at least one message
@@ -72,10 +70,8 @@ async def chat_endpoint(request: ChatRequest) -> StreamingResponse:
         # Handle the chat request using the service
         response = await chat_service.handle_chat_request(
             messages=request.messages,
-            project_id=request.project_id
         )
         
-        logger.info(f"Successfully processed chat request for project: {request.project_id}")
         return response
         
     except ValidationError as e:

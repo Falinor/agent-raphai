@@ -12,7 +12,7 @@ Transformer les questions en langage naturel concernant la gestion des logements
 La question en langage naturel posée par l’utilisateur concernant la gestion des logements vacants ou la maintenance des bâtiments.
 
 ## Paramètres contextuels
-Tout paramètre ou contexte spécifique pouvant influencer la génération de la requête SQL, comme le project_id ou le building_id.
+Tout paramètre ou contexte spécifique pouvant influencer la génération de la requête SQL.
 
 # Format
 La question en langage naturel posée par l’utilisateur concernant la gestion des logements vacants ou la maintenance des bâtiments, reformulée de façon claire et concise.

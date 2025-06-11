@@ -1,36 +1,43 @@
 
-
-from agents import Agent
-from agents.extensions.handoff_prompt import RECOMMENDED_PROMPT_PREFIX
-from agents.mcp import MCPServerStdio
+from agents import Agent, function_tool
 from prompts.base_agent import PROMPT_SYSTEME_ZLV_AGENT
 from prompts.common import TABLES_SCHEMA_COMMON_PROMPT
 from prompts.establishment import TABLES_SCHEMA_ESTABLISHMENT_PROMPT
 from prompts.joins_prompt import TABLES_SCHEMA_JOINS_PROMPT
 from prompts.production_prompt import TABLES_SCHEMA_PRODUCTION_PROMPT
 from prompts.sql_agent_prompt import PROMPT_SYSTEM_AGENT_SQL
+from pydantic import BaseModel
 
+class Query(BaseModel):
+    query: str
 
-async def build_zlv_sql_agent() -> Agent:
-    # Get the predefined queries prompt section
+@function_tool(name_override="motherduck_tool")
+async def tool_motherduck(query: Query) -> str:
+    """
+    Exécute une requête SQL sur MotherDuck et retourne les résultats.
 
-    async with MCPServerStdio(
-        params={
-            "command": "uvx",
-            "args": [
-                "mcp-server-motherduck",
-                "--db-path",
-                "md:",
-                "--motherduck-token",
-                "<YOUR_MOTHERDUCK_TOKEN_HERE>"
-            ],
-        }
-    ) as server:
-        tools = await server.list_tools()
-        
+    Args:
+        query: Un objet contenant la requête SQL à exécuter.
+
+    Returns:
+        Les résultats de la requête SQL sous forme de liste de dictionnaires, ou un message d'erreur.
+    """
+    import duckdb
+
+    if not query or not query.query:
+        return "Aucune requête SQL fournie."
+    try:
+        con = duckdb.connect(database="md:dwh?motherduck_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJhcGhhZWwuY291cml2YXVkQGJldGEuZ291di5mciIsInNlc3Npb24iOiJyYXBoYWVsLmNvdXJpdmF1ZC5iZXRhLmdvdXYuZnIiLCJwYXQiOiJINU1ucmFyVFRCNGlob0J0aTFxWUlqNVMxRWJTdVo3M2w1QllET0Q3cEF3IiwidXNlcklkIjoiN2RiYjUyNjctNTc0Zi00Yjc2LTk5MjctNWQyYmQ4ZjZjMjUxIiwiaXNzIjoibWRfcGF0IiwicmVhZE9ubHkiOmZhbHNlLCJ0b2tlblR5cGUiOiJyZWFkX3dyaXRlIiwiaWF0IjoxNzQ5NjUxNzE3LCJleHAiOjE3NTA1MTU3MTd9.bpR8-82I3S7p1ELI4nV0trvs2XOcisOIma3-DJo4H5U'", read_only=True)
+        result = con.execute(query.query).fetchdf()
+        output = result.to_dict(orient="records")
+        return str(output)
+    except Exception as e:
+        return f"Erreur lors de l'exécution de la requête SQL: {str(e)}"
+
+async def build_zlv_agent() -> Agent:
     agent = Agent(
-        name="SQL Assistant",
-        instructions=f"""{RECOMMENDED_PROMPT_PREFIX}
+        name="ZLV Assistant",
+        instructions=f"""{PROMPT_SYSTEME_ZLV_AGENT}
         <{PROMPT_SYSTEM_AGENT_SQL}>
         <{TABLES_SCHEMA_COMMON_PROMPT}>
         <{TABLES_SCHEMA_ESTABLISHMENT_PROMPT}>
@@ -39,39 +46,11 @@ async def build_zlv_sql_agent() -> Agent:
 
         Use tools to answer the user question.
 
-        First, determine if you can use a predefined query to answer the question:
-        1. Use the list_predefined_queries tool to see available queries.
-        2. Use the get_predefined_query tool to retrieve a specific query if it matches the user's needs.
-        3. You can modify the predefined query if needed to better match the user's question.
-
-        If no predefined query matches the user's needs, write a custom SQL query.
-
-        Next steps:
-        1. Perform the SQL query to get the data. If it's not needed just answer the user question directly.
-        2. Then, if needed you can use the tools to create visualisations of the data:
-           - Table visualisations
-           - Scatter chart visualisations
-           - Bar chart visualisations
-           - Pie chart visualisations
-           - Line chart visualisations
+        Créé une requête SQL pour répondre à la question de l'utilisateur. 
+        Ensuite utilise la tool motherduck pour exécuter la requête SQL et récupérer les données.
+        Renvoies les informations de la requête SQL et des données récupérées.
         """,
-        tools=[],
-        mcp_servers=[tools],
-        
         model="gpt-4.1",
-        input_guardrails=[],
-        tool_use_behavior="run_llm_again",
-    )
-    return agent
-
-
-
-def build_zlv_agent() -> Agent:
-    agent = Agent(
-        name="ZLV Assistant",
-        instructions=PROMPT_SYSTEME_ZLV_AGENT,
-        model="gpt-4.1",
-        handoffs=[build_zlv_sql_agent()],
-        handoff_description="Use SQL Agent to answer the user question if needed",
+        tools=[tool_motherduck],
     )
     return agent

@@ -13,7 +13,7 @@ La question de l’utilisateur est le dernier message du contexte. Ne répondez 
 La question en langage naturel posée par l’utilisateur concernant la gestion des logements vacants ou la maintenance des bâtiments.
 
 ## Paramètres contextuels
-Tout paramètre ou contexte spécifique pouvant influencer la réponse, comme le project_id ou le building_id.
+Tout paramètre ou contexte spécifique pouvant influencer la réponse
 
 # Format
 La question en langage naturel posée par l’utilisateur concernant la gestion des logements vacants ou la maintenance des bâtiments.

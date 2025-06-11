@@ -22,15 +22,14 @@ class OriChatServiceAgent:
     async def handle_chat_request(
         self,
         messages: List[ClientMessage],
-        project_id: UUID,
     ) -> StreamingResponse:
 
 
-        ori_agent = build_zlv_agent()
+        ori_agent = await build_zlv_agent()
 
         # Generate the streaming response
         stream_generator = self._stream_chat_response(
-            messages=messages, project_id=project_id, ori_agent=ori_agent,
+            messages=messages, ori_agent=ori_agent,
         )
 
         # Create the streaming response with appropriate headers
@@ -45,14 +44,12 @@ class OriChatServiceAgent:
         self,
         ori_agent: Agent,
         messages: List[ClientMessage],
-        project_id: UUID,
     ) -> AsyncGenerator[str, None]:
         """
         Stream chat response in the requested protocol format.
 
         Args:
             messages: List of chat messages
-            project_id: UUID of the project
             protocol: Stream protocol to use ('data' or 'text')
 
         Yields:
@@ -62,7 +59,7 @@ class OriChatServiceAgent:
         # Format messages for OpenAI
 
         formatted_inputs = convert_to_openai_messages(
-            messages=messages, project_id=project_id
+            messages=messages
         )
 
         run_streaming = Runner.run_streamed(
@@ -86,11 +83,6 @@ class OriChatServiceAgent:
                 output = item.output
                 if isinstance(output, str):
                     continue
-                if isinstance(output, SQLQueryOutput):
-                    csv_data = output.csv
-                    csv_base64 = base64.b64encode(csv_data.encode()).decode()
-                    yield f'k:{{"data":"{csv_base64}","mimeType":"text/csv"}}\n'
-
                 if isinstance(output, BaseVisualization):
                     data = output.model_dump_json()
                     base64_json = base64.b64encode(data.encode()).decode()

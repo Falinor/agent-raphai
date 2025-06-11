@@ -13,7 +13,7 @@ class ToolInvocation(BaseModel):
 class ClientMessage(BaseModel):
     role: Optional[str] = None
     content: Optional[str] = None
-    toolInvocations: Optional[List[ToolInvocation]] = None
+    #toolInvocations: Optional[List[ToolInvocation]] = None
 
 
 def convert_to_openai_messages(
