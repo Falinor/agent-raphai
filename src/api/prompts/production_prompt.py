@@ -1,5 +1,5 @@
 TABLES_SCHEMA_PRODUCTION_PROMPT = """
-### Table : marts_production_campaigns
+### Table : main_marts.marts_production_campaigns
 
 | Nom du champ                              | Type                        | Commentaire (français)                                      |
 |-------------------------------------------|-----------------------------|-------------------------------------------------------------|
@@ -62,7 +62,7 @@ TABLES_SCHEMA_PRODUCTION_PROMPT = """
 
 ---
 
-### Table : marts_production_establishments
+### Table : main_marts.marts_production_establishments
 
 | Nom du champ                              | Type                        | Commentaire (français)                                      |
 |-------------------------------------------|-----------------------------|-------------------------------------------------------------|
@@ -143,7 +143,7 @@ TABLES_SCHEMA_PRODUCTION_PROMPT = """
 
 ---
 
-### Table : marts_production_housing
+### Table : main_marts.marts_production_housing
 
 | Nom du champ                              | Type                        | Commentaire (français)                                      |
 |-------------------------------------------|-----------------------------|-------------------------------------------------------------|
@@ -235,7 +235,7 @@ TABLES_SCHEMA_PRODUCTION_PROMPT = """
 
 ---
 
-### Table : marts_production_owners
+### Table : main_marts.marts_production_owners
 
 | Nom du champ                              | Type                        | Commentaire (français)                                      |
 |-------------------------------------------|-----------------------------|-------------------------------------------------------------|

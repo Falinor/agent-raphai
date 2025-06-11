@@ -1,4 +1,5 @@
-TABLES_SCHEMA_ESTABLISHMENT_PROMPT = """# Table : main_marts.marts_public_establishments_morphology_unpivoted
+TABLES_SCHEMA_ESTABLISHMENT_PROMPT = """
+# Table : main_marts.marts_public_establishments_morphology_unpivoted
 
 | Nom                       | Type            | Commentaire (français)                                               |
 |---------------------------|-----------------|----------------------------------------------------------------------|
@@ -93,4 +94,6 @@ TABLES_SCHEMA_ESTABLISHMENT_PROMPT = """# Table : main_marts.marts_public_establ
 | count_housing_vacant_production             | HUGEINT         | Nombre de logements vacants (production)                       |
 | count_housing_energy_sieve_production       | HUGEINT         | Nombre de passoires énergétiques (production)                  |
 | sum_living_area_vacant_housing_private_fil_ccthp | DECIMAL(38,3) | Surface habitable totale des logements vacants privés FIL CCTHP|
-| sum_plot_area_vacant_housing_private_fil_ccthp  | DECIMAL(38,3) | Surface de parcelle totale des logements vacants privés FIL CCTHP|"""
+| sum_plot_area_vacant_housing_private_fil_ccthp  | DECIMAL(38,3) | Surface de parcelle totale des logements vacants privés FIL CCTHP|
+
+"""

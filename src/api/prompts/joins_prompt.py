@@ -1,7 +1,7 @@
 TABLES_SCHEMA_JOINS_PROMPT = """
 Below are the join tables used in the marts_production schema.
 
-### marts_production_join_campaigns_housing
+### main_marts.marts_production_join_campaigns_housing
 
 | Name             | Type    | Comment                                      |
 |------------------|---------|----------------------------------------------|
@@ -12,7 +12,7 @@ Below are the join tables used in the marts_production schema.
 
 ---
 
-### marts_production_join_establishment_cities
+### main_marts.marts_production_join_establishment_cities
 
 | Name             | Type    | Comment                                      |
 |------------------|---------|----------------------------------------------|
@@ -21,7 +21,7 @@ Below are the join tables used in the marts_production schema.
 
 ---
 
-### marts_production_join_establishment_housing
+### main_marts.marts_production_join_establishment_housing
 
 | Name             | Type    | Comment                                      |
 |------------------|---------|----------------------------------------------|
@@ -31,7 +31,7 @@ Below are the join tables used in the marts_production schema.
 
 ---
 
-### marts_production_join_housing_groups
+### main_marts.marts_production_join_housing_groups
 
 | Name             | Type    | Comment                                      |
 |------------------|---------|----------------------------------------------|
@@ -41,7 +41,7 @@ Below are the join tables used in the marts_production schema.
 
 ---
 
-### marts_production_join_owner_housing
+### main_marts.marts_production_join_owner_housing
 
 | Name             | Type    | Comment                                      |
 |------------------|---------|----------------------------------------------|

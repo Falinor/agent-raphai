@@ -1,4 +1,3 @@
-
 import logging
 from agents import Agent, function_tool
 from prompts.base_agent import PROMPT_SYSTEME_ZLV_AGENT
@@ -8,11 +7,20 @@ from prompts.joins_prompt import TABLES_SCHEMA_JOINS_PROMPT
 from prompts.production_prompt import TABLES_SCHEMA_PRODUCTION_PROMPT
 from prompts.sql_agent_prompt import PROMPT_SYSTEM_AGENT_SQL
 from pydantic import BaseModel
+import pandas as pd
+from typing import Literal, Optional
 
 logger = logging.getLogger("openai.agents") # or openai.agents.tracing for the Tracing logger
 
 class Query(BaseModel):
     query: str
+
+class GeographicalQuery(BaseModel):
+    level: Literal["city", "department", "region"]
+    metric: str  # The metric to aggregate (e.g., "count(*)", "sum(revenue)", etc.)
+    table: str   # The main table to query from
+    filters: Optional[str] = None  # Optional WHERE clause filters
+    join_clauses: Optional[str] = None  # Optional JOIN clauses if needed
 
 @function_tool(name_override="motherduck_tool")
 async def tool_motherduck(query: Query) -> str:
@@ -32,7 +40,7 @@ async def tool_motherduck(query: Query) -> str:
         return "Aucune requête SQL fournie."
     try:
         logger.info(f"Connexion à la base de données MotherDuck")
-        con = duckdb.connect(database="md:?motherduck_token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJhcGhhZWwuY291cml2YXVkQGJldGEuZ291di5mciIsInNlc3Npb24iOiJyYXBoYWVsLmNvdXJpdmF1ZC5iZXRhLmdvdXYuZnIiLCJwYXQiOiJINU1ucmFyVFRCNGlob0J0aTFxWUlqNVMxRWJTdVo3M2w1QllET0Q3cEF3IiwidXNlcklkIjoiN2RiYjUyNjctNTc0Zi00Yjc2LTk5MjctNWQyYmQ4ZjZjMjUxIiwiaXNzIjoibWRfcGF0IiwicmVhZE9ubHkiOmZhbHNlLCJ0b2tlblR5cGUiOiJyZWFkX3dyaXRlIiwiaWF0IjoxNzQ5NjUxNzE3LCJleHAiOjE3NTA1MTU3MTd9.bpR8-82I3S7p1ELI4nV0trvs2XOcisOIma3-DJo4H5U'", read_only=True)
+        con = duckdb.connect(database="md:dwh?motherduck_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJhcGhhZWwuY291cml2YXVkQGJldGEuZ291di5mciIsInNlc3Npb24iOiJyYXBoYWVsLmNvdXJpdmF1ZC5iZXRhLmdvdXYuZnIiLCJwYXQiOiI4Xzg2N0ZxeFBVTzJBbU94UlNtNGlMNDBjMXctZUQyZHpiR3dfRVl4ekFJIiwidXNlcklkIjoiN2RiYjUyNjctNTc0Zi00Yjc2LTk5MjctNWQyYmQ4ZjZjMjUxIiwiaXNzIjoibWRfcGF0IiwicmVhZE9ubHkiOmZhbHNlLCJ0b2tlblR5cGUiOiJyZWFkX3dyaXRlIiwiaWF0IjoxNzQ5NjU0MTUyLCJleHAiOjE3NTA1MTgxNTJ9.AiIs1gSEVjLc8wanlbCsKWBqHVmsCB5BpmDCkVa1te0", read_only=True)
         logger.info(f"Exécution de la requête SQL: {query.query}")
         result = con.execute(query.query).fetchdf()
         logger.info(f"Résultat de la requête SQL: {result}")
@@ -42,6 +50,7 @@ async def tool_motherduck(query: Query) -> str:
     except Exception as e:
         logger.error(f"Erreur lors de l'exécution de la requête SQL: {str(e)}")
         return f"Erreur lors de l'exécution de la requête SQL: {str(e)}"
+
 
 async def build_zlv_agent() -> Agent:
     agent = Agent(
@@ -55,9 +64,19 @@ async def build_zlv_agent() -> Agent:
 
         Use tools to answer the user question.
 
-        Créé une requête SQL pour répondre à la question de l'utilisateur. 
-        Ensuite utilise la tool motherduck pour exécuter la requête SQL et récupérer les données.
-        Renvoies les informations de la requête SQL et des données récupérées.
+        Tu as maintenant deux outils principaux:
+        1. motherduck_tool: Pour les requêtes SQL générales
+        2. geographical_analysis_tool: Pour les analyses géographiques par ville, département ou région
+
+        Pour les analyses géographiques, utilise geographical_analysis_tool qui peut:
+        - Analyser par niveau: 'city', 'department', ou 'region'
+        - Retourner les codes géographiques appropriés
+        - Agréger les données selon le niveau choisi
+        - Inclure des métriques personnalisées
+
+        Créé une requête appropriée pour répondre à la question de l'utilisateur. 
+        Ensuite utilise l'outil adapté pour exécuter la requête et récupérer les données.
+        Renvoies les informations de la requête et des données récupérées.
         """,
         model="gpt-4.1",
         tools=[tool_motherduck],
