@@ -1,0 +1,29 @@
+{
+  "name": "nextjs-dsfr-ai",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "predev": "react-dsfr update-icons",
+    "dev": "copy-dsfr-to-public && next dev",
+    "prebuild": "react-dsfr update-icons",
+    "build": "copy-dsfr-to-public && next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^1.3.22",
+    "@codegouvfr/react-dsfr": "^1.25.2",
+    "@types/node": "20.19.0",
+    "@types/react": "19.1.6",
+    "@types/react-dom": "19.1.6",
+    "ai": "^4.3.16",
+    "clsx": "^2.1.1",
+    "eslint": "9.28.0",
+    "eslint-config-next": "15.3.3",
+    "next": "15.3.3",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "typescript": "5.8.3"
+  },
+  "packageManager": "yarn@4.9.2+sha512.1fc009bc09d13cfd0e19efa44cbfc2b9cf6ca61482725eb35bbc5e257e093ebf4130db6dfe15d604ff4b79efd8e1e8e99b25fa7d0a6197c9f9826358d4d65c3c"
+}
