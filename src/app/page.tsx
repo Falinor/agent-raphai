@@ -1,11 +1,23 @@
-import { StartDsfrOnHydration } from "../dsfr-bootstrap";
+import { Input } from '@codegouvfr/react-dsfr/Input'
+import { Box, Container } from '@mui/material'
 
 export default function Page() {
   return (
-    <>
-      {/* Important: You must mount this component on every pages of your App! */}
-      <StartDsfrOnHydration />
-      <h1>Welcome!</h1>
-    </>
-  );
+    <Container>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100vh'
+        }}
+      >
+        <Input
+          label="Comment puis-je vous aider ?"
+          textArea
+          style={{ width: '100%' }}
+        />
+      </Box>
+    </Container>
+  )
 }
