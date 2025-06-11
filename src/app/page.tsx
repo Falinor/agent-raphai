@@ -32,6 +32,9 @@ export default function Page() {
         }}
       >
         <Stack spacing={4} sx={{ width: '100%' }}>
+          <Typography variant="h1" sx={{ alignSelf: 'center', pb: 4 }}>
+            Bonjour, Stéphanie
+          </Typography>
           <form onSubmit={handleSubmit}>
             <Input
               label="Comment puis-je vous aider ?"
